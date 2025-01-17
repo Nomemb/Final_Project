@@ -47,7 +47,8 @@ jobs:
         fi
 
         # FastAPI 실행
-        nohup uvicorn main:app --reload > fastapi.log 2>&1 &
+        # nohup uvicorn main:app --reload > fastapi.log 2>&1 &
+        nohup python main.py
 
         echo "FastAPI가 성공적으로 실행되었습니다."
         EOF
