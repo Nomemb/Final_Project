@@ -185,19 +185,6 @@ async def input_agent_dialog(voice: ChatMessage):
     connected_clients.difference_update(disconnected)
 
     return {"message": "상담사 메시지가 성공적으로 추가되었습니다."}
-    # 연결된 클라이언트들 중 끊어진 연결 처리
-    disconnected = set()
-    for client in connected_clients:
-        try:
-            await client.send_text(json.dumps(message_data))
-        except:
-            disconnected.add(client)
-    
-    # 끊어진 연결 제거
-    connected_clients.difference_update(disconnected)
-
-    return {"message": "상담사 메시지가 성공적으로 추가되었습니다."}
-
 
 
 from pages.model_query import find_similar_doc_from_db
@@ -211,17 +198,48 @@ async def chatbot_query(query_input: ChatbotQueryInput):
     try:
         answer = find_similar_doc_from_db(user_message)
         print(f"answer: ", answer)
-        
-        # 응답을 한 번만 보내도록 수정
-        return {
-            "status": "success",
-            "bot_response": answer.replace('  ', ' ')
-        }
+
+        return answer
     except Exception as e:
         return {
             "status": "error",
             "bot_response": str(e)
         }
+
+@app.post("/chatbot_mockup")
+async def chatbot_query(query_input: ChatbotQueryInput):
+    return {
+        "status": "success", 
+        "main_script" : 
+            "불편을 드려 죄송합니다. \n \
+            주문 상태가 `배송 준비 중`이라 배송이 지연되는 점, \n \
+            우선 양해 부탁드립니다. \n \
+            정확한 상담을 위해 주문하신 주문 번호 확인 부탁드립니다.",
+        "sub_scenarios": [
+            {
+                "title": "[로켓배송 상품01]", 
+                "content": [
+                    "1. 주문번호 확인", 
+                    "2. 배송 현황을 시스템에서 직접 확인하고,", 
+                    "3. 지연 사유(악천후, 주문량 증가 등)를 안내합니다.", 
+                    "4. 예상 배송일을 다시 안내하거나, \n \
+                        문제 해결을 위해 최선을 다하겠다고 설명"
+                ]
+                , "final_script_ex": "예상 배송일은 X월 X일로 확인됩니다."
+            }, 
+            {
+                "title": "[로켓배송 상품02]", 
+                "content": [
+                    "1. ㅋㅋ 주문번호 확인", 
+                    "2. ㅋㅋ 배송 현황을 시스템에서 직접 확인하고,", 
+                    "3. ㅋㅋ 지연 사유(악천후, 주문량 증가 등)를 안내합니다.", 
+                    "4. ㅋㅋ 예상 배송일을 다시 안내하거나, \n \
+                        \t 문제 해결을 위해 최선을 다하겠다고 설명"
+                ]
+                , "final_script_ex": "ㅋㅋ 예상 배송일은 X월 X일로 확인됩니다."
+            }, 
+        ]
+    }
 
 # 실행 명령어
 # uvicorn main:app --port 8002 --reload

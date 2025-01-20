@@ -11,7 +11,7 @@ function LiveChatApp() {
     let reconnectAttempt = 0;
     const maxReconnectAttempts = 5;
 
-    const websocket = new WebSocket("ws://127.0.0.1:8002/ws");
+    const websocket = new WebSocket("ws://127.0.0.1:8000/ws");
 
         websocket.onopen = () => {
           console.log("상담이 연결되었습니다.");
